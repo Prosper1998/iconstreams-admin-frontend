@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICON Admin - Subscriptions</title>
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-dashboard">
+        <!-- Sidebar -->
+        <div class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <h1><span>ICON</span> Admin</h1>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="sidebar-nav-title">Main</div>
+                <a href="dashboard.html" class="sidebar-nav-item">
+                    <i class="fas fa-tachometer-alt sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Dashboard</span>
+                </a>
+                <a href="content.html" class="sidebar-nav-item">
+                    <i class="fas fa-film sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Content</span>
+                </a>
+                <a href="users.html" class="sidebar-nav-item">
+                    <i class="fas fa-users sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Users</span>
+                </a>
+                <a href="subscriptions.html" class="sidebar-nav-item active">
+                    <i class="fas fa-credit-card sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Subscriptions</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="sidebar-nav-title">Management</div>
+                <a href="reports.html" class="sidebar-nav-item">
+                    <i class="fas fa-flag sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Reports</span>
+                </a>
+                <a href="analytics.html" class="sidebar-nav-item">
+                    <i class="fas fa-chart-bar sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Analytics</span>
+                </a>
+                <a href="comments.html" class="sidebar-nav-item">
+                    <i class="fas fa-comments sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Comments</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="sidebar-nav-title">System</div>
+                <a href="settings.html" class="sidebar-nav-item">
+                    <i class="fas fa-cog sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Settings</span>
+                </a>
+                <a href="#" class="sidebar-nav-item" onclick="logoutAdmin()">
+                    <i class="fas fa-sign-out-alt sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Logout</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="admin-main" id="adminMain">
+            <div class="admin-topbar">
+                <h1 class="page-title">Subscriptions</h1>
+                <div class="admin-user-menu" id="adminUserMenu">
+                    <div class="admin-user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="admin-user-info">
+                        <div class="admin-user-name" id="adminUserName">Admin User</div>
+                        <div class="admin-user-role">Administrator</div>
+                    </div>
+                    <i class="fas fa-chevron-down admin-dropdown-icon"></i>
+                </div>
+            </div>
+            
+            <!-- Placeholder Content -->
+            <div class="admin-card">
+                <h2>Subscriptions Page</h2>
+                <p>This page is under construction. Check back soon for subscription management features!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="subscriptions.js"></script>
+</body>
+</html>

@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICON Admin - Content Management</title>
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-dashboard">
+        <!-- Sidebar -->
+        <div class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <h1><span>ICON</span> Admin</h1>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="sidebar-nav-title">Main</div>
+                <a href="dashboard.html" class="sidebar-nav-item">
+                    <i class="fas fa-tachometer-alt sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Dashboard</span>
+                </a>
+                <a href="content.html" class="sidebar-nav-item active">
+                    <i class="fas fa-film sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Content</span>
+                </a>
+                <a href="users.html" class="sidebar-nav-item">
+                    <i class="fas fa-users sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Users</span>
+                </a>
+                <a href="subscriptions.html" class="sidebar-nav-item">
+                    <i class="fas fa-credit-card sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Subscriptions</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="sidebar-nav-title">Management</div>
+                <a href="reports.html" class="sidebar-nav-item">
+                    <i class="fas fa-flag sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Reports</span>
+                </a>
+                <a href="analytics.html" class="sidebar-nav-item">
+                    <i class="fas fa-chart-bar sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Analytics</span>
+                </a>
+                <a href="comments.html" class="sidebar-nav-item">
+                    <i class="fas fa-comments sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Comments</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="sidebar-nav-title">System</div>
+                <a href="settings.html" class="sidebar-nav-item">
+                    <i class="fas fa-cog sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Settings</span>
+                </a>
+                <a href="#" class="sidebar-nav-item" onclick="logoutAdmin()">
+                    <i class="fas fa-sign-out-alt sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Logout</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="admin-main" id="adminMain">
+            <div class="admin-topbar">
+                <h1 class="page-title">Content Management</h1>
+                <div class="admin-user-menu" id="adminUserMenu">
+                    <div class="admin-user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="admin-user-info">
+                        <div class="admin-user-name" id="adminUserName">Admin User</div>
+                        <div class="admin-user-role">Administrator</div>
+                    </div>
+                    <i class="fas fa-chevron-down admin-dropdown-icon"></i>
+                </div>
+            </div>
+            
+            <!-- Content Actions -->
+            <div class="admin-content-actions">
+                <button class="btn primary" id="addContentBtn">
+                    <i class="fas fa-plus"></i> Add New Content
+                </button>
+                
+                <div class="admin-filters">
+                    <div class="filter-group">
+                        <label for="categoryFilter">Category:</label>
+                        <select id="categoryFilter">
+                            <option value="all">All Categories</option>
+                            <option value="Drama">Drama</option>
+                            <option value="Thriller">Thriller</option>
+                            <option value="Adventure">Adventure</option>
+                            <option value="Documentary">Documentary</option>
+                            <option value="Comedy">Comedy</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="statusFilter">Status:</label>
+                        <select id="statusFilter">
+                            <option value="all">All Statuses</option>
+                            <option value="published">Published</option>
+                            <option value="draft">Draft</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                    
+                    <div class="search-box">
+                        <input type="text" id="contentSearch" placeholder="Search content...">
+                        <button class="search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Content Table -->
+            <div class="admin-card">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>
+                                <input type="checkbox" id="selectAllContent">
+                            </th>
+                            <th>Thumbnail</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Upload Date</th>
+                            <th>Views</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contentList">
+                        <tr>
+                            <td colspan="8">Loading content...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="admin-pagination">
+                <button class="pagination-btn" disabled>
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="pagination-btn active">1</button>
+                <button class="pagination-btn">2</button>
+                <button class="pagination-btn">3</button>
+                <button class="pagination-btn">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add/Edit Content Modal -->
+    <div id="contentModal" class="admin-modal">
+        <div class="admin-modal-content">
+            <div class="admin-modal-header">
+                <h2 id="contentModalTitle">Add New Content</h2>
+                <button class="admin-modal-close" id="closeContentModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="admin-modal-body">
+                <form id="contentForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contentTitle">Title</label>
+                            <input type="text" id="contentTitle" name="title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contentCategory">Category</label>
+                            <select id="contentCategory" name="category" required>
+                                <option value="">Select Category</option>
+                                <option value="Drama">Drama</option>
+                                <option value="Thriller">Thriller</option>
+                                <option value="Adventure">Adventure</option>
+                                <option value="Documentary">Documentary</option>
+                                <option value="Comedy">Comedy</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contentDescription">Description</label>
+                        <textarea id="contentDescription" name="description" rows="4" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contentThumbnail">Thumbnail</label>
+                            <div class="file-input-container">
+                                <input type="file" id="contentThumbnail" name="thumbnail" accept="image/*">
+                                <button type="button" class="btn secondary file-select-btn">
+                                    <i class="fas fa-upload"></i> Select Image
+                                </button>
+                                <span class="file-name">No file selected</span>
+                            </div>
+                            <div class="thumbnail-preview" id="thumbnailPreview"></div>
+                        </div>
+                        <div class="form-group">
+                            <label for="contentVideo">Video File</label>
+                            <div class="file-input-container">
+                                <input type="file" id="contentVideo" name="video" accept="video/*">
+                                <button type="button" class="btn secondary file-select-btn">
+                                    <i class="fas fa-upload"></i> Select Video
+                                </button>
+                                <span class="file-name">No file selected</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contentStatus">Visibility</label>
+                            <select id="contentStatus" name="status" required>
+                                <option value="draft">Draft</option>
+                                <option value="pending">Pending Review</option>
+                                <option value="published">Published</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="contentVisibility">Access Level</label>
+                            <select id="contentVisibility" name="visibility" required>
+                                <option value="public">Public</option>
+                                <option value="premium">Premium Only</option>
+                                <option value="private">Private</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="contentTags">Tags</label>
+                        <input type="text" id="contentTags" name="tags" placeholder="Enter tags separated by commas">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="publishDate">Publish Date</label>
+                            <input type="date" id="publishDate" name="publishDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="releaseYear">Release Year</label>
+                            <input type="number" id="releaseYear" name="releaseYear" min="1900" max="2099">
+                        </div>
+                        <div class="form-group">
+                            <label for="duration">Duration (minutes)</label>
+                            <input type="number" id="duration" name="duration" min="1">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn secondary" id="cancelContentBtn">Cancel</button>
+                        <button type="submit" class="btn primary" id="saveContentBtn">Save Content</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="content.js"></script>
+</body>
+</html>

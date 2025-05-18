@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ICON Admin - Login</title>
+  <link rel="stylesheet" href="admin.css"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary: #6C63FF;
+      --primary-dark: #5A52E0;
+      --secondary: #FF6584;
+      --accent: #32D74B;
+      --dark: #121212;
+      --dark-light: #1E1E1E;
+      --light: #FFFFFF;
+      --gray: #AAAAAA;
+      --gradient: linear-gradient(135deg, #6C63FF, #3B36BF);
+      --card-radius: 12px;
+      --btn-radius: 8px;
+      --shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+    }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+    body {
+      background-color: var(--dark);
+      color: var(--light);
+      overflow-x: hidden;
+    }
+    .btn {
+      padding: 0.9rem 1.8rem;
+      border-radius: var(--btn-radius);
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.95rem;
+      background: var(--gradient);
+      color: white;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(108, 99, 255, 0.4);
+    }
+    .admin-login-body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, rgba(30, 30, 30, 0.95), rgba(18, 18, 18, 0.97));
+    }
+    .admin-login-container {
+      background: var(--dark-light);
+      border-radius: var(--card-radius);
+      max-width: 450px;
+      width: 100%;
+      padding: 2.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .admin-login-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .admin-login-header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .admin-login-header h1 span {
+      color: var(--primary);
+    }
+    .admin-login-header p {
+      color: var(--gray);
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: var(--light);
+      font-size: 1rem;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.25);
+    }
+    .form-message {
+      margin-bottom: 1rem;
+      color: var(--secondary);
+      min-height: 20px;
+      font-size: 0.9rem;
+    }
+    .admin-login-footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: var(--gray);
+    }
+  </style>
+</head>
+<body class="admin-login-body">
+  <div class="admin-login-container">
+    <div class="admin-login-header">
+      <h1>ICON <span>Admin</span></h1>
+      <p>Streaming Platform Management</p>
+    </div>
+
+    <div class="admin-login-form">
+      <form id="adminLoginForm">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" value="admin@iconstream.com" required />
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" value="admin123" required />
+        </div>
+        <div class="form-message" id="loginMessage"></div>
+        <button type="submit" class="btn">Sign In</button>
+      </form>
+    </div>
+
+    <div class="admin-login-footer">
+      <p>Return to <a href="../index.html">Website</a></p>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('adminLoginForm').addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const loginMessage = document.getElementById('loginMessage');
+
+      try {
+        const res = await fetch('http://localhost:5000/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.token) {
+          sessionStorage.setItem('adminToken', data.token);
+          sessionStorage.setItem('adminUser', JSON.stringify(data.user));
+          window.location.href = 'dashboard.html';
+        } else {
+          loginMessage.textContent = data.message || 'Login failed.';
+          loginMessage.style.color = 'var(--secondary)';
+        }
+      } catch (err) {
+        console.error('Login error:', err);
+        loginMessage.textContent = 'Server error. Try again.';
+        loginMessage.style.color = 'var(--secondary)';
+      }
+    });
+  </script>
+</body>
+</html>

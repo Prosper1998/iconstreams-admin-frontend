@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICON Admin - Dashboard</title>
+    <link rel="stylesheet" href="admin.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="admin-dashboard">
+        <!-- Sidebar -->
+        <div class="admin-sidebar" id="adminSidebar">
+            <div class="sidebar-header">
+                <h1><span>ICON</span> Admin</h1>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="sidebar-nav-title">Main</div>
+                <a href="dashboard.html" class="sidebar-nav-item active">
+                    <i class="fas fa-tachometer-alt sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Dashboard</span>
+                </a>
+                <a href="content.html" class="sidebar-nav-item">
+                    <i class="fas fa-film sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Content</span>
+                </a>
+                <a href="users.html" class="sidebar-nav-item">
+                    <i class="fas fa-users sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Users</span>
+                </a>
+                <a href="subscriptions.html" class="sidebar-nav-item">
+                    <i class="fas fa-credit-card sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Subscriptions</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="sidebar-nav-title">Management</div>
+                <a href="reports.html" class="sidebar-nav-item">
+                    <i class="fas fa-flag sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Reports</span>
+                </a>
+                <a href="analytics.html" class="sidebar-nav-item">
+                    <i class="fas fa-chart-bar sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Analytics</span>
+                </a>
+                <a href="comments.html" class="sidebar-nav-item">
+                    <i class="fas fa-comments sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Comments</span>
+                </a>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="sidebar-nav-title">System</div>
+                <a href="settings.html" class="sidebar-nav-item">
+                    <i class="fas fa-cog sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Settings</span>
+                </a>
+                <a href="#" class="sidebar-nav-item" onclick="logoutAdmin()">
+                    <i class="fas fa-sign-out-alt sidebar-nav-icon"></i>
+                    <span class="sidebar-nav-text">Logout</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="admin-main" id="adminMain">
+            <div class="admin-topbar">
+                <h1 class="page-title">Dashboard</h1>
+                <div class="admin-user-menu" id="adminUserMenu">
+                    <div class="admin-user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="admin-user-info">
+                        <div class="admin-user-name" id="adminUserName">Admin User</div>
+                        <div class="admin-user-role">Administrator</div>
+                    </div>
+                    <i class="fas fa-chevron-down admin-dropdown-icon"></i>
+                </div>
+            </div>
+            
+            <!-- Dashboard Stats -->
+            <div class="admin-dashboard-stats">
+                <div class="row">
+                    <div class="col">
+                        <div class="admin-card">
+                            <div class="admin-card-title">
+                                <i class="fas fa-users"></i> Total Users
+                            </div>
+                            <div class="stat-value" id="totalUsers">12,345</div>
+                            <div class="stat-change">
+                                <i class="fas fa-arrow-up"></i> <span id="userGrowth">8.5</span>% since last month
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="admin-card">
+                            <div class="admin-card-title">
+                                <i class="fas fa-film"></i> Total Videos
+                            </div>
+                            <div class="stat-value" id="totalVideos">1,287</div>
+                            <div class="stat-change">
+                                <i class="fas fa-arrow-up"></i> <span id="videoGrowth">12.3</span>% since last month
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="admin-card">
+                            <div class="admin-card-title">
+                                <i class="fas fa-credit-card"></i> Active Subscriptions
+                            </div>
+                            <div class="stat-value" id="activeSubscriptions">8,721</div>
+                            <div class="stat-change">
+                                <i class="fas fa-arrow-up"></i> <span id="subscriptionGrowth">5.7</span>% since last month
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="admin-card">
+                            <div class="admin-card-title">
+                                <i class="fas fa-eye"></i> Total Views
+                            </div>
+                            <div class="stat-value" id="totalViews">4.2M</div>
+                            <div class="stat-change">
+                                <i class="fas fa-arrow-up"></i> <span id="viewGrowth">15.2</span>% since last month
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Users -->
+            <div class="admin-card">
+                <div class="admin-card-title">
+                    <i class="fas fa-user-plus"></i> Recent Users
+                </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Email</th>
+                            <th>Date Joined</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recentUsers">
+                        <tr>
+                            <td>John Doe</td>
+                            <td>john.doe@example.com</td>
+                            <td>May 5, 2025</td>
+                            <td><span class="admin-badge success">Active</span></td>
+                            <td>
+                                <div class="admin-actions">
+                                    <button class="admin-action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="admin-action-btn"><i class="fas fa-edit"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Jane Smith</td>
+                            <td>jane.smith@example.com</td>
+                            <td>May 4, 2025</td>
+                            <td><span class="admin-badge success">Active</span></td>
+                            <td>
+                                <div class="admin-actions">
+                                    <button class="admin-action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="admin-action-btn"><i class="fas fa-edit"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Robert Johnson</td>
+                            <td>robert.j@example.com</td>
+                            <td>May 3, 2025</td>
+                            <td><span class="admin-badge warning">Pending</span></td>
+                            <td>
+                                <div class="admin-actions">
+                                    <button class="admin-action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="admin-action-btn"><i class="fas fa-edit"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Latest Videos -->
+            <div class="admin-card">
+                <div class="admin-card-title">
+                    <i class="fas fa-film"></i> Latest Videos
+                </div>
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Thumbnail</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Upload Date</th>
+                            <th>Views</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="latestVideos">
+                        <tr>
+                            <td><div style="width:60px;height:40px;background:#333;border-radius:4px;"></div></td>
+                            <td>Epic Adventure Film</td>
+                            <td>Adventure</td>
+                            <td>May 5, 2025</td>
+                            <td>3.2K</td>
+                            <td><span class="admin-badge success">Published</span></td>
+                            <td>
+                                <div class="admin-actions">
+                                    <button class="admin-action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="admin-action-btn"><i class="fas fa-edit"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><div style="width:60px;height:40px;background:#333;border-radius:4px;"></div></td>
+                            <td>Mystery Thriller</td>
+                            <td>Thriller</td>
+                            <td>May 4, 2025</td>
+                            <td>1.7K</td>
+                            <td><span class="admin-badge success">Published</span></td>
+                            <td>
+                                <div class="admin-actions">
+                                    <button class="admin-action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="admin-action-btn"><i class="fas fa-edit"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><div style="width:60px;height:40px;background:#333;border-radius:4px;"></div></td>
+                            <td>Comedy Special</td>
+                            <td>Comedy</td>
+                            <td>May 3, 2025</td>
+                            <td>2.4K</td>
+                            <td><span class="admin-badge info">Draft</span></td>
+                            <td>
+                                <div class="admin-actions">
+                                    <button class="admin-action-btn"><i class="fas fa-eye"></i></button>
+                                    <button class="admin-action-btn"><i class="fas fa-edit"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="auth.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>
