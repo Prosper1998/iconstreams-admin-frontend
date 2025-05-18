@@ -1,15 +1,10 @@
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize UI
+const API_BASE_URL = 'https://your-render-backend-url.com'; // Replace this
+
+document.addEventListener('DOMContentLoaded', function () {
     initSidebar();
     loadAdminUserInfo();
-    
-    // Load users list
     loadUsersList();
-    
-    // Set up user filter events
     initUserFilters();
-    
-    // Set up modal functionality
     initUserModal();
 });
 
@@ -17,9 +12,9 @@ function initSidebar() {
     const sidebarToggle = document.getElementById('sidebarToggle');
     const adminSidebar = document.getElementById('adminSidebar');
     const adminMain = document.getElementById('adminMain');
-    
+
     if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', function() {
+        sidebarToggle.addEventListener('click', () => {
             adminSidebar.classList.toggle('collapsed');
             adminMain.classList.toggle('expanded');
         });
@@ -28,298 +23,204 @@ function initSidebar() {
 
 function loadAdminUserInfo() {
     const adminUserName = document.getElementById('adminUserName');
-    
-    if (adminUserName) {
-        // In a real app, you would get this from your API using the token
-        adminUserName.textContent = 'Admin User';
+    const user = JSON.parse(sessionStorage.getItem('adminUser'));
+
+    if (adminUserName && user) {
+        adminUserName.textContent = user.name;
     }
 }
 
-function loadUsersList() {
-    // Mock data for users list
-    const users = [
-        {
-            id: 1,
-            name: 'John Doe',
-            email: 'john@example.com',
-            joinedDate: '2025-04-28',
-            subscription: 'premium',
-            status: 'active',
-            role: 'user'
-        },
-        {
-            id: 2,
-            name: 'Jane Smith',
-            email: 'jane@example.com',
-            joinedDate: '2025-04-27',
-            subscription: 'basic',
-            status: 'active',
-            role: 'user'
-        },
-        {
-            id: 3,
-            name: 'Michael Johnson',
-            email: 'michael@example.com',
-            joinedDate: '2025-04-26',
-            subscription: 'none',
-            status: 'pending',
-            role: 'user'
-        },
-        {
-            id: 4,
-            name: 'Sarah Williams',
-            email: 'sarah@example.com',
-            joinedDate: '2025-04-25',
-            subscription: 'premium',
-            status: 'suspended',
-            role: 'user'
-        },
-        {
-            id: 5,
-            name: 'Robert Brown',
-            email: 'robert@example.com',
-            joinedDate: '2025-04-24',
-            subscription: 'basic',
-            status: 'active',
-            role: 'moderator'
-        },
-        {
-            id: 6,
-            name: 'Emily Davis',
-            email: 'emily@example.com',
-            joinedDate: '2025-04-23',
-            subscription: 'premium',
-            status: 'active',
-            role: 'user'
-        },
-        {
-            id: 7,
-            name: 'David Wilson',
-            email: 'david@example.com',
-            joinedDate: '2025-04-22',
-            subscription: 'none',
-            status: 'banned',
-            role: 'user'
-        },
-        {
-            id: 8,
-            name: 'Admin User',
-            email: 'admin@iconstreaming.com',
-            joinedDate: '2025-01-01',
-            subscription: 'premium',
-            status: 'active',
-            role: 'admin'
-        }
-    ];
-    
-    displayUsersList(users);
+async function loadUsersList() {
+    const token = sessionStorage.getItem('adminToken');
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/users`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const users = await res.json();
+        displayUsersList(users);
+    } catch (err) {
+        console.error('Error fetching users:', err);
+        displayUsersList([]);
+    }
 }
 
-function displayUsersList(usersList) {
+function displayUsersList(users) {
     const usersListElement = document.getElementById('usersList');
-    
+
     if (usersListElement) {
-        usersListElement.innerHTML = usersList.map(user => `
+        usersListElement.innerHTML = users.map(user => `
             <tr>
-                <td>
-                    <input type="checkbox" class="user-checkbox" data-id="${user.id}">
-                </td>
+                <td><input type="checkbox" class="user-checkbox" data-id="${user._id}"></td>
                 <td>${user.name}</td>
                 <td>${user.email}</td>
-                <td>${user.joinedDate}</td>
-                <td>
-                    <span class="admin-badge ${getSubscriptionBadgeClass(user.subscription)}">
-                        ${formatSubscription(user.subscription)}
-                    </span>
-                </td>
-                <td>
-                    <span class="admin-badge ${getBadgeClass(user.status)}">
-                        ${user.status.charAt(0).toUpperCase() + user.status.slice(1)}
-                    </span>
-                </td>
-                <td>${user.role.charAt(0).toUpperCase() + user.role.slice(1)}</td>
+                <td>${new Date(user.createdAt).toLocaleDateString()}</td>
+                <td><span class="admin-badge ${getSubscriptionBadgeClass(user.subscription || 'none')}">${formatSubscription(user.subscription || 'none')}</span></td>
+                <td><span class="admin-badge ${getBadgeClass(user.status)}">${capitalize(user.status)}</span></td>
+                <td>${capitalize(user.role || 'user')}</td>
                 <td>
                     <div class="admin-actions">
-                        <button class="admin-action-btn" onclick="viewUser(${user.id})" title="View User">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                        <button class="admin-action-btn" onclick="editUser(${user.id})" title="Edit User">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <button class="admin-action-btn" onclick="deleteUser(${user.id})" title="Delete User">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        <button class="admin-action-btn" onclick="viewUser('${user._id}')"><i class="fas fa-eye"></i></button>
+                        <button class="admin-action-btn" onclick="editUser('${user._id}')"><i class="fas fa-edit"></i></button>
+                        <button class="admin-action-btn" onclick="deleteUser('${user._id}')"><i class="fas fa-trash"></i></button>
                     </div>
                 </td>
             </tr>
         `).join('');
-        
-        // Set up select all checkbox
-        const selectAllCheckbox = document.getElementById('selectAllUsers');
-        if (selectAllCheckbox) {
-            selectAllCheckbox.addEventListener('change', function() {
-                const userCheckboxes = document.querySelectorAll('.user-checkbox');
-                userCheckboxes.forEach(checkbox => {
-                    checkbox.checked = this.checked;
-                });
-            });
-        }
     }
 }
 
 function initUserFilters() {
-    const statusFilter = document.getElementById('statusFilter');
-    const roleFilter = document.getElementById('roleFilter');
-    const userSearch = document.getElementById('userSearch');
-    
-    if (statusFilter) {
-        statusFilter.addEventListener('change', applyFilters);
-    }
-    
-    if (roleFilter) {
-        roleFilter.addEventListener('change', applyFilters);
-    }
-    
-    if (userSearch) {
-        userSearch.addEventListener('input', applyFilters);
-    }
-}
-
-function applyFilters() {
-    // In a real application, you would call your API with the filter parameters
-    // For now, we'll just reload the users with the mock data
-    loadUsersList();
+    document.getElementById('statusFilter')?.addEventListener('change', loadUsersList);
+    document.getElementById('roleFilter')?.addEventListener('change', loadUsersList);
+    document.getElementById('userSearch')?.addEventListener('input', loadUsersList);
 }
 
 function initUserModal() {
-    const addUserBtn = document.getElementById('addUserBtn');
-    const closeUserModal = document.getElementById('closeUserModal');
-    const cancelUserBtn = document.getElementById('cancelUserBtn');
-    const userModal = document.getElementById('userModal');
-    const userForm = document.getElementById('userForm');
-    
-    if (addUserBtn) {
-        addUserBtn.addEventListener('click', function() {
-            // Clear form and show modal
-            userForm.reset();
-            document.getElementById('userModalTitle').textContent = 'Add New User';
-            // Password is required for new users
-            document.getElementById('userPassword').setAttribute('required', 'required');
-            userModal.style.display = 'block';
-        });
-    }
-    
-    if (closeUserModal) {
-        closeUserModal.addEventListener('click', function() {
-            userModal.style.display = 'none';
-        });
-    }
-    
-    if (cancelUserBtn) {
-        cancelUserBtn.addEventListener('click', function() {
-            userModal.style.display = 'none';
-        });
-    }
-    
-    // Handle form submission
-    if (userForm) {
-        userForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // In a real application, you would send this data to your API
-            // For now, we'll just log it
-            const formData = new FormData(userForm);
-            const userData = {};
-            
-            formData.forEach((value, key) => {
-                userData[key] = value;
+    const modal = document.getElementById('userModal');
+    const form = document.getElementById('userForm');
+
+    document.getElementById('addUserBtn')?.addEventListener('click', () => {
+        form.reset();
+        document.getElementById('userModalTitle').textContent = 'Add New User';
+        document.getElementById('userPassword').required = true;
+        modal.style.display = 'block';
+    });
+
+    document.getElementById('closeUserModal')?.addEventListener('click', () => modal.style.display = 'none');
+    document.getElementById('cancelUserBtn')?.addEventListener('click', () => modal.style.display = 'none');
+
+    form?.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        const token = sessionStorage.getItem('adminToken');
+
+        try {
+            const res = await fetch(`${API_BASE_URL}/api/users`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(data)
             });
-            
-            console.log('User Data:', userData);
-            alert('User saved successfully!');
-            userModal.style.display = 'none';
-            
-            // Reload users list
-            loadUsersList();
+
+            const result = await res.json();
+            if (res.ok) {
+                alert('User saved successfully!');
+                modal.style.display = 'none';
+                loadUsersList();
+            } else {
+                alert(result.message || 'Error saving user');
+            }
+        } catch (err) {
+            console.error('Error saving user:', err);
+            alert('Error saving user');
+        }
+    });
+}
+
+async function viewUser(userId) {
+    console.log('View user:', userId);
+    // You could redirect to a user details page if desired
+}
+
+async function editUser(userId) {
+    const token = sessionStorage.getItem('adminToken');
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
         });
+        const user = await res.json();
+
+        document.getElementById('userModalTitle').textContent = 'Edit User';
+        document.getElementById('userName').value = user.name;
+        document.getElementById('userEmail').value = user.email;
+        document.getElementById('userPhone').value = user.phone || '';
+        document.getElementById('userRole').value = user.role;
+        document.getElementById('userStatus').value = user.status;
+        document.getElementById('userSubscription').value = user.subscription || 'none';
+        document.getElementById('userPassword').removeAttribute('required');
+
+        document.getElementById('userModal').style.display = 'block';
+
+        document.getElementById('userForm').onsubmit = async function (e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const updatedData = Object.fromEntries(formData.entries());
+
+            try {
+                const updateRes = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(updatedData)
+                });
+
+                const result = await updateRes.json();
+                if (updateRes.ok) {
+                    alert('User updated successfully!');
+                    document.getElementById('userModal').style.display = 'none';
+                    loadUsersList();
+                } else {
+                    alert(result.message || 'Error updating user');
+                }
+            } catch (err) {
+                console.error('Error updating user:', err);
+                alert('Error updating user');
+            }
+        };
+    } catch (err) {
+        console.error('Error loading user:', err);
+    }
+}
+
+async function deleteUser(userId) {
+    if (!confirm('Are you sure you want to delete this user?')) return;
+    const token = sessionStorage.getItem('adminToken');
+
+    try {
+        const res = await fetch(`${API_BASE_URL}/api/users/${userId}`, {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        const result = await res.json();
+        if (res.ok) {
+            alert('User deleted successfully');
+            loadUsersList();
+        } else {
+            alert(result.message || 'Error deleting user');
+        }
+    } catch (err) {
+        console.error('Error deleting user:', err);
     }
 }
 
 function getBadgeClass(status) {
-    switch(status.toLowerCase()) {
-        case 'active':
-            return 'success';
-        case 'pending':
-            return 'warning';
-        case 'suspended':
-            return 'info';
-        case 'banned':
-            return 'danger';
-        default:
-            return '';
+    switch (status?.toLowerCase()) {
+        case 'active': return 'success';
+        case 'pending': return 'warning';
+        case 'suspended': return 'info';
+        case 'banned': return 'danger';
+        default: return '';
     }
 }
 
 function getSubscriptionBadgeClass(subscription) {
-    switch(subscription.toLowerCase()) {
-        case 'premium':
-            return 'success';
-        case 'basic':
-            return 'info';
-        case 'none':
-        default:
-            return '';
+    switch (subscription?.toLowerCase()) {
+        case 'premium': return 'success';
+        case 'basic': return 'info';
+        default: return '';
     }
 }
 
-function formatSubscription(subscription) {
-    switch(subscription.toLowerCase()) {
-        case 'premium':
-            return 'Premium';
-        case 'basic':
-            return 'Basic';
-        case 'none':
-        default:
-            return 'None';
-    }
+function formatSubscription(sub) {
+    return capitalize(sub || 'none');
 }
 
-function viewUser(userId) {
-    // In a real application, you would redirect to the user details page
-    console.log(`Viewing user with ID: ${userId}`);
-    // For now, just show an alert
-    alert(`Viewing user details for ID: ${userId}`);
-}
-
-function editUser(userId) {
-    console.log(`Editing user with ID: ${userId}`);
-    
-    // In a real app, you would fetch the user data from your API
-    // For now, we'll just show the modal with mock data
-    document.getElementById('userModalTitle').textContent = 'Edit User';
-    
-    // Password is not required when editing
-    document.getElementById('userPassword').removeAttribute('required');
-    
-    // Set form fields (this would come from your API in a real app)
-    document.getElementById('userName').value = 'John Doe';
-    document.getElementById('userEmail').value = 'john@example.com';
-    document.getElementById('userPhone').value = '+1234567890';
-    document.getElementById('userRole').value = 'user';
-    document.getElementById('userStatus').value = 'active';
-    document.getElementById('userSubscription').value = 'premium';
-    
-    // Show the modal
-    document.getElementById('userModal').style.display = 'block';
-}
-
-function deleteUser(userId) {
-    if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
-        // In a real application, you would call your API to delete the user
-        console.log(`Deleting user with ID: ${userId}`);
-        
-        // Update the UI (in a real app, this would happen after API confirmation)
-        alert('User deleted successfully!');
-        loadUsersList();
-    }
+function capitalize(str) {
+    return str ? str.charAt(0).toUpperCase() + str.slice(1) : '';
 }

@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:5000";
+const API_BASE_URL = "https://iconstreams-backend.onrender.com";;
 
 document.addEventListener('DOMContentLoaded', function () {
   initSidebar();
@@ -34,7 +34,6 @@ async function loadContentList() {
   try {
     const token = sessionStorage.getItem('adminToken');
     const response = await fetch(`${API_BASE_URL}/api/content`, {
-      method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -60,12 +59,12 @@ function displayContentList(contentList) {
         <td>${item.category}</td>
         <td>${new Date(item.uploadDate).toLocaleDateString()}</td>
         <td>${item.views.toLocaleString()}</td>
-        <td><span class="admin-badge ${getBadgeClass(item.status)}">${item.status.charAt(0).toUpperCase() + item.status.slice(1)}</span></td>
+        <td><span class="admin-badge ${getBadgeClass(item.status)}">${capitalize(item.status)}</span></td>
         <td>
           <div class="admin-actions">
-            <button class="admin-action-btn" onclick="viewContent('${item._id}')" title="View Content"><i class="fas fa-eye"></i></button>
-            <button class="admin-action-btn" onclick="editContent('${item._id}')" title="Edit Content"><i class="fas fa-edit"></i></button>
-            <button class="admin-action-btn" onclick="deleteContent('${item._id}')" title="Delete Content"><i class="fas fa-trash"></i></button>
+            <button class="admin-action-btn" onclick="viewContent('${item._id}')"><i class="fas fa-eye"></i></button>
+            <button class="admin-action-btn" onclick="editContent('${item._id}')"><i class="fas fa-edit"></i></button>
+            <button class="admin-action-btn" onclick="deleteContent('${item._id}')"><i class="fas fa-trash"></i></button>
           </div>
         </td>
       </tr>`).join('');
@@ -97,9 +96,7 @@ async function applyFilters() {
   try {
     const token = sessionStorage.getItem('adminToken');
     const res = await fetch(`${API_BASE_URL}/api/content`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
+      headers: { 'Authorization': `Bearer ${token}` },
     });
     let content = await res.json();
     if (category !== 'all') content = content.filter(c => c.category.toLowerCase() === category);
@@ -135,26 +132,17 @@ function initContentModal() {
     try {
       const response = await fetch(`${API_BASE_URL}/api/content`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        headers: { 'Authorization': `Bearer ${token}` },
         body: formData,
       });
 
-      const contentType = response.headers.get("content-type");
-      if (contentType && contentType.includes("application/json")) {
-        const result = await response.json();
-        if (response.ok) {
-          alert('Content saved successfully!');
-          modal.style.display = 'none';
-          loadContentList();
-        } else {
-          alert(result.message || 'Error saving content');
-        }
+      const result = await response.json();
+      if (response.ok) {
+        alert('Content saved successfully!');
+        modal.style.display = 'none';
+        loadContentList();
       } else {
-        const text = await response.text();
-        console.error("Unexpected server response:", text);
-        alert("Unexpected server response");
+        alert(result.message || 'Error saving content');
       }
     } catch (err) {
       console.error('Error saving content:', err);
@@ -194,8 +182,12 @@ function getBadgeClass(status) {
   }
 }
 
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 function viewContent(contentId) {
-  console.log(`View content ${contentId}`);
+  console.log(`Viewing content: ${contentId}`);
 }
 
 async function editContent(contentId) {
@@ -229,20 +221,13 @@ async function editContent(contentId) {
           headers: { 'Authorization': `Bearer ${token}` },
           body: formData,
         });
-        const contentType = updateRes.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const result = await updateRes.json();
-          if (updateRes.ok) {
-            alert('Content updated successfully!');
-            document.getElementById('contentModal').style.display = 'none';
-            loadContentList();
-          } else {
-            alert(result.message || 'Error updating content');
-          }
+        const result = await updateRes.json();
+        if (updateRes.ok) {
+          alert('Content updated successfully!');
+          document.getElementById('contentModal').style.display = 'none';
+          loadContentList();
         } else {
-          const text = await updateRes.text();
-          console.error("Unexpected response:", text);
-          alert("Unexpected server response");
+          alert(result.message || 'Error updating content');
         }
       } catch (err) {
         console.error('Error updating content:', err);
@@ -251,7 +236,7 @@ async function editContent(contentId) {
     };
   } catch (err) {
     console.error('Error loading content:', err);
-    alert('Error fetching content');
+    alert('Error loading content');
   }
 }
 
