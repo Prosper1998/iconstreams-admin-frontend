@@ -1,4 +1,5 @@
-const API_BASE_URL = 'https://iconstreams-backend.onrender.com'; // Replace this
+const API_BASE_URL = 'https://iconstreams-backend-clean.onrender.com';
+ // Replace this
 
 document.addEventListener('DOMContentLoaded', function () {
     initSidebar();
