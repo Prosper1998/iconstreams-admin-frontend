@@ -140,38 +140,40 @@
   </div>
 
   <script>
-    document.getElementById('adminLoginForm').addEventListener('submit', async function (e) {
-      e.preventDefault();
+  const API_BASE_URL = 'https://iconstreams-backend-clean.onrender.com';
 
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const loginMessage = document.getElementById('loginMessage');
+  document.getElementById('adminLoginForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
 
-      try {
-        const res = await fetch('http://localhost:5000/api/auth/login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ email, password })
-        });
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const loginMessage = document.getElementById('loginMessage');
 
-        const data = await res.json();
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
 
-        if (res.ok && data.token) {
-          sessionStorage.setItem('adminToken', data.token);
-          sessionStorage.setItem('adminUser', JSON.stringify(data.user));
-          window.location.href = 'dashboard.html';
-        } else {
-          loginMessage.textContent = data.message || 'Login failed.';
-          loginMessage.style.color = 'var(--secondary)';
-        }
-      } catch (err) {
-        console.error('Login error:', err);
-        loginMessage.textContent = 'Server error. Try again.';
+      const data = await res.json();
+
+      if (res.ok && data.token) {
+        sessionStorage.setItem('adminToken', data.token);
+        sessionStorage.setItem('adminUser', JSON.stringify(data.user));
+        window.location.href = 'dashboard.html';
+      } else {
+        loginMessage.textContent = data.message || 'Login failed.';
         loginMessage.style.color = 'var(--secondary)';
       }
-    });
-  </script>
+    } catch (err) {
+      console.error('Login error:', err);
+      loginMessage.textContent = 'Server error. Try again.';
+      loginMessage.style.color = 'var(--secondary)';
+    }
+  });
+</script>
 </body>
 </html>
