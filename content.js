@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://iconstreams-backend.onrender.com";;
+const API_BASE_URL = "https://iconstreams-backend.onrender.com";
 
 document.addEventListener('DOMContentLoaded', function () {
   initSidebar();
@@ -34,9 +34,7 @@ async function loadContentList() {
   try {
     const token = sessionStorage.getItem('adminToken');
     const response = await fetch(`${API_BASE_URL}/api/content`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
+      headers: { 'Authorization': `Bearer ${token}` },
     });
 
     const content = await response.json();
@@ -49,7 +47,6 @@ async function loadContentList() {
 
 function displayContentList(contentList) {
   const contentListElement = document.getElementById('contentList');
-
   if (contentListElement) {
     contentListElement.innerHTML = contentList.map(item => `
       <tr>
@@ -126,14 +123,38 @@ function initContentModal() {
 
   form.addEventListener('submit', async function (e) {
     e.preventDefault();
-    const formData = new FormData(form);
+
     const token = sessionStorage.getItem('adminToken');
 
+    const title = document.getElementById('contentTitle').value;
+    const category = document.getElementById('contentCategory').value;
+    const description = document.getElementById('contentDescription').value;
+    const tags = document.getElementById('contentTags').value.split(',').map(t => t.trim());
+    const thumbnailFile = document.getElementById('contentThumbnail').files[0];
+    const videoFile = document.getElementById('contentVideo').files[0];
+
     try {
-      const response = await fetch(`${API_BASE_URL}/api/content`, {
+      const [thumbnailUrl, videoUrl] = await Promise.all([
+        uploadToBunny(thumbnailFile, `thumbnails/${thumbnailFile.name}`),
+        uploadToBunny(videoFile, `videos/${videoFile.name}`),
+      ]);
+
+      const payload = {
+        title,
+        category,
+        description,
+        tags,
+        thumbnail: thumbnailUrl,
+        video: videoUrl,
+      };
+
+      const response = await fetch(`${API_BASE_URL}/api/content/direct`, {
         method: 'POST',
-        headers: { 'Authorization': `Bearer ${token}` },
-        body: formData,
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
       });
 
       const result = await response.json();
@@ -145,8 +166,8 @@ function initContentModal() {
         alert(result.message || 'Error saving content');
       }
     } catch (err) {
-      console.error('Error saving content:', err);
-      alert('Error saving content');
+      console.error('Error uploading or saving:', err);
+      alert('Upload or save failed.');
     }
   });
 
@@ -190,56 +211,6 @@ function viewContent(contentId) {
   console.log(`Viewing content: ${contentId}`);
 }
 
-async function editContent(contentId) {
-  try {
-    const token = sessionStorage.getItem('adminToken');
-    const res = await fetch(`${API_BASE_URL}/api/content/${contentId}`, {
-      headers: { 'Authorization': `Bearer ${token}` },
-    });
-    const content = await res.json();
-
-    document.getElementById('contentModalTitle').textContent = 'Edit Content';
-    document.getElementById('contentTitle').value = content.title;
-    document.getElementById('contentCategory').value = content.category;
-    document.getElementById('contentDescription').value = content.description;
-    document.getElementById('contentStatus').value = content.status;
-    document.getElementById('contentVisibility').value = content.visibility;
-    document.getElementById('contentTags').value = content.tags.join(', ');
-    document.getElementById('publishDate').value = content.publishDate.split('T')[0];
-    document.getElementById('releaseYear').value = content.releaseYear;
-    document.getElementById('duration').value = content.duration;
-    document.getElementById('thumbnailPreview').innerHTML = `<img src="${content.thumbnail}" alt="Thumbnail Preview">`;
-
-    document.getElementById('contentModal').style.display = 'block';
-
-    document.getElementById('contentForm').onsubmit = async function (e) {
-      e.preventDefault();
-      const formData = new FormData(this);
-      try {
-        const updateRes = await fetch(`${API_BASE_URL}/api/content/${contentId}`, {
-          method: 'PUT',
-          headers: { 'Authorization': `Bearer ${token}` },
-          body: formData,
-        });
-        const result = await updateRes.json();
-        if (updateRes.ok) {
-          alert('Content updated successfully!');
-          document.getElementById('contentModal').style.display = 'none';
-          loadContentList();
-        } else {
-          alert(result.message || 'Error updating content');
-        }
-      } catch (err) {
-        console.error('Error updating content:', err);
-        alert('Error updating content');
-      }
-    };
-  } catch (err) {
-    console.error('Error loading content:', err);
-    alert('Error loading content');
-  }
-}
-
 async function deleteContent(contentId) {
   if (!confirm('Are you sure you want to delete this content?')) return;
   try {
@@ -260,3 +231,14 @@ async function deleteContent(contentId) {
     alert('Error deleting content');
   }
 }
+
+// Bunny Upload
+async function uploadToBunny(file, path) {
+  const url = `https://storage.bunnycdn.com/iconstreams/${path}`;
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'AccessKey': 'c1f601ba-9cd1-4664-8e52bc4619bf-2580-4a8a',
+      'Content-Type': 'application/octet-stream',
+    },
+    body: file,
