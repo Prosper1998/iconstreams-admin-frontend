@@ -232,7 +232,7 @@ async function deleteContent(contentId) {
   }
 }
 
-// Bunny Upload
+// ✅ Bunny Upload - now complete
 async function uploadToBunny(file, path) {
   const url = `https://storage.bunnycdn.com/iconstreams/${path}`;
   const response = await fetch(url, {
@@ -242,3 +242,11 @@ async function uploadToBunny(file, path) {
       'Content-Type': 'application/octet-stream',
     },
     body: file,
+  });
+
+  if (!response.ok) {
+    throw new Error('Bunny upload failed');
+  }
+
+  return `https://iconstreams.b-cdn.net/${path}`;
+}
