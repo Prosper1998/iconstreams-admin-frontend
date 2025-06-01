@@ -129,7 +129,11 @@ function initContentModal() {
     const title = document.getElementById('contentTitle').value;
     const category = document.getElementById('contentCategory').value;
     const description = document.getElementById('contentDescription').value;
-    const tags = document.getElementById('contentTags').value.split(',').map(t => t.trim());
+    const tags = document.getElementById('contentTags').value
+      .split(',')
+      .map(t => t.trim())
+      .filter(Boolean); // avoids empty entries
+
     const thumbnailFile = document.getElementById('contentThumbnail').files[0];
     const videoFile = document.getElementById('contentVideo').files[0];
 
