@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://iconstreams-backend.onrender.com";
+const API_BASE_URL = "https://iconstreams-backend-clean.onrender.com";
 
 document.addEventListener('DOMContentLoaded', function () {
   initSidebar();
@@ -232,7 +232,7 @@ async function deleteContent(contentId) {
   }
 }
 
-// ✅ Bunny Upload - now complete
+// ✅ Bunny Upload
 async function uploadToBunny(file, path) {
   const url = `https://storage.bunnycdn.com/iconstreams/${path}`;
   const response = await fetch(url, {
